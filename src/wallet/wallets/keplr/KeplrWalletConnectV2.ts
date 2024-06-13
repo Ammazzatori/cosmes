@@ -21,6 +21,11 @@ import {
 } from "../ConnectedWallet";
 import type { Keplr } from "cosmes/registry";
 
+export interface SignOptions {
+  readonly preferNoSetFee?: boolean;
+  readonly preferNoSetMemo?: boolean;
+  readonly disableBalanceCheck?: boolean;
+}
 
 export class KeplrWalletConnectV2 extends ConnectedWallet {
   private readonly wc: WalletConnectV2;
@@ -72,7 +77,7 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
     sequence: bigint
   ): Promise<string> {
     console.log("KeplrWalletConnectV2");
-    console.log(fee);
+    console.log(fee.amount[0]);
     const tx = new Tx({
       chainId: this.chainId,
       pubKey: this.pubKey,
@@ -89,8 +94,12 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
     let txRaw: TxRaw;
     if (this.useAmino) {
       const sign = tx.toStdSignDoc(params);
+      const options: SignOptions = {
+        preferNoSetFee: true,
+        preferNoSetMemo: true,
+      };
       const { signed, signature } = await WalletError.wrap(
-        this.ext.signAmino(this.chainId, this.address, sign)
+        this.ext.signAmino(this.chainId, this.address, sign, options)
       );
       console.log(signed.fee.amount[0]);
       txRaw = tx.toSignedAmino(signed, signature.signature);
