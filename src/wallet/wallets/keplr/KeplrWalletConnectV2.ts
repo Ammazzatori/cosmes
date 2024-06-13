@@ -61,7 +61,6 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
   ): Promise<string> {
     console.log("KeplrWalletConnectV2");
     console.log(fee);
-    console.log(this.useAmino);
     const tx = new Tx({
       chainId: this.chainId,
       pubKey: this.pubKey,
@@ -78,28 +77,19 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
     let txRaw: TxRaw;
     if (this.useAmino) {
       const sign = tx.toStdSignDoc(params);
-      console.log(sign);
       const { signed, signature } = await WalletError.wrap(
         this.wc.signAmino(this.chainId, this.address, sign)
       );
-      console.log(signed);
-      console.log(signature);
-      const signed2 = { ...signed, fee: sign.fee };
-      console.log('--')
-      console.log(signed2);
-      txRaw = tx.toSignedAmino(signed2, signature.signature);
+      console.log(signed.fee.amount[0]);
+      txRaw = tx.toSignedAmino(signed, signature.signature);
     } else {
       const sign = tx.toSignDoc(params);
-      console.log(sign);
       const { signed, signature } = await WalletError.wrap(
         this.wc.signDirect(this.chainId, this.address, sign)
       );
-      console.log(signed);
-      console.log(signature);
       txRaw = tx.toSignedDirect(signed, signature.signature);
     }
 
-    console.log(txRaw);
     return RpcClient.broadcastTx(this.rpc, txRaw);
   }
 }
