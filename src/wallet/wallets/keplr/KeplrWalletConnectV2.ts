@@ -84,7 +84,7 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
       );
       console.log(signed);
       console.log(signature);
-      txRaw = tx.toSignedAmino(signed, signature.signature);
+      txRaw = tx.toSignedAmino(sign, signature.signature);
     } else {
       const sign = tx.toSignDoc(params);
       console.log(sign)
@@ -96,6 +96,7 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
       txRaw = tx.toSignedDirect(signed, signature.signature);
     }
 
+    console.log('---');
     console.log(txRaw);
     console.log(this.rpc);
     console.log(this.gasPrice);

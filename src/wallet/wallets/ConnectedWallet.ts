@@ -109,7 +109,6 @@ export abstract class ConnectedWallet {
     { msgs, memo }: UnsignedTx,
     feeMultiplier = 1.4
   ): Promise<Fee> {
-    console.log("ConnectedWallet::estimateFee");
     const estimate = async () => {
       const { sequence } = await this.getAuthInfo(true);
       const { gasInfo } = await simulateTx(this.rpc, {
