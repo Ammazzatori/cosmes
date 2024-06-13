@@ -76,12 +76,13 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
       timeoutHeight,
     };
     let txRaw: TxRaw;
-    if (this.useAmino && false) {
+    if (this.useAmino) {
       const sign = tx.toStdSignDoc(params);
       console.log(sign)
       const { signed, signature } = await WalletError.wrap(
         this.wc.signAmino(this.chainId, this.address, sign)
       );
+      signed.fee.amount[0].amount = sign.fee.amount[0].amount;
       console.log(signed);
       console.log(signature);
       txRaw = tx.toSignedAmino(signed, signature.signature);
@@ -96,10 +97,7 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
       txRaw = tx.toSignedDirect(signed, signature.signature);
     }
 
-    console.log('---');
     console.log(txRaw);
-    console.log(this.rpc);
-    console.log(this.gasPrice);
     return RpcClient.broadcastTx(this.rpc, txRaw);
   }
 }
