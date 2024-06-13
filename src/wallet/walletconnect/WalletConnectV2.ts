@@ -63,6 +63,9 @@ export class WalletConnectV2 {
   private readonly onDisconnectCbs: Set<() => unknown>;
   private readonly onAccountChangeCbs: Set<() => unknown>;
   private signClient: SignClient | null;
+  defaultOptions: {
+    sign: { preferNoSetFee: boolean; preferNoSetMemo: boolean };
+  };
 
   constructor(projectId: string, mobileAppDetails: MobileAppDetails) {
     this.projectId = projectId;
@@ -71,6 +74,9 @@ export class WalletConnectV2 {
     this.onDisconnectCbs = new Set();
     this.onAccountChangeCbs = new Set();
     this.signClient = null;
+    this.defaultOptions = {
+      sign: { preferNoSetFee: true, preferNoSetMemo: true },
+    };
   }
 
   public async connect(chainIds: string[]): Promise<void> {
