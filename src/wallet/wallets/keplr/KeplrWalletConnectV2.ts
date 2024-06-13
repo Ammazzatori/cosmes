@@ -76,7 +76,7 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
       timeoutHeight,
     };
     let txRaw: TxRaw;
-    if (this.useAmino) {
+    if (this.useAmino && false) {
       const sign = tx.toStdSignDoc(params);
       console.log(sign)
       const { signed, signature } = await WalletError.wrap(
@@ -84,7 +84,7 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
       );
       console.log(signed);
       console.log(signature);
-      txRaw = tx.toSignedAmino(sign, signature.signature);
+      txRaw = tx.toSignedAmino(signed, signature.signature);
     } else {
       const sign = tx.toSignDoc(params);
       console.log(sign)
