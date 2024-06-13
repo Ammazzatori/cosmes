@@ -72,6 +72,8 @@ export class KeplrExtension extends ConnectedWallet {
     accountNumber: bigint,
     sequence: bigint
   ): Promise<string> {
+    console.log("KeplrExtension");
+    console.log(fee);
     const tx = new Tx({
       chainId: this.chainId,
       pubKey: this.pubKey,
