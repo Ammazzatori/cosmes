@@ -78,17 +78,19 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
     let txRaw: TxRaw;
     if (this.useAmino) {
       const sign = tx.toStdSignDoc(params);
-      console.log(sign)
+      console.log(sign);
       const { signed, signature } = await WalletError.wrap(
         this.wc.signAmino(this.chainId, this.address, sign)
       );
-      signed.fee.amount[0].amount = sign.fee.amount[0].amount;
       console.log(signed);
       console.log(signature);
-      txRaw = tx.toSignedAmino(signed, signature.signature);
+      const signed2 = { ...signed, fee: sign.fee };
+      console.log('--')
+      console.log(signed2);
+      txRaw = tx.toSignedAmino(signed2, signature.signature);
     } else {
       const sign = tx.toSignDoc(params);
-      console.log(sign)
+      console.log(sign);
       const { signed, signature } = await WalletError.wrap(
         this.wc.signDirect(this.chainId, this.address, sign)
       );
