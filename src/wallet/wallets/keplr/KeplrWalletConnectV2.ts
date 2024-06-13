@@ -99,7 +99,7 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
         preferNoSetMemo: true,
       };
       const { signed, signature } = await WalletError.wrap(
-        this.ext.signAmino(this.chainId, this.address, sign, options)
+        this.wc.signAmino(this.chainId, this.address, sign)
       );
       console.log(signed.fee.amount[0]);
       txRaw = tx.toSignedAmino(signed, signature.signature);

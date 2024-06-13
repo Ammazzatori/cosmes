@@ -197,6 +197,10 @@ export class WalletConnectV2 {
       {
         signerAddress,
         signDoc: stdSignDoc,
+        sign: {
+          preferNoSetFee: true,
+          preferNoSetMemo: true,
+        },
       }
     );
     return {
