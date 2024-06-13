@@ -19,10 +19,13 @@ import {
   SignArbitraryResponse,
   UnsignedTx,
 } from "../ConnectedWallet";
+import type { Keplr } from "cosmes/registry";
+
 
 export class KeplrWalletConnectV2 extends ConnectedWallet {
   private readonly wc: WalletConnectV2;
   private readonly useAmino: boolean;
+  private readonly ext: Keplr;
 
   constructor(
     walletName: WalletName,
@@ -44,6 +47,15 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
       gasPrice
     );
     this.wc = wc;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    this.ext = wc;
+    this.ext.defaultOptions = {
+      sign: {
+        preferNoSetFee: true,
+        preferNoSetMemo: true,
+      },
+    };
     this.useAmino = useAmino;
   }
 
@@ -78,7 +90,7 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
     if (this.useAmino) {
       const sign = tx.toStdSignDoc(params);
       const { signed, signature } = await WalletError.wrap(
-        this.wc.signAmino(this.chainId, this.address, sign)
+        this.ext.signAmino(this.chainId, this.address, sign)
       );
       console.log(signed.fee.amount[0]);
       txRaw = tx.toSignedAmino(signed, signature.signature);
