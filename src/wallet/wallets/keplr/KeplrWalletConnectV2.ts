@@ -19,18 +19,10 @@ import {
   SignArbitraryResponse,
   UnsignedTx,
 } from "../ConnectedWallet";
-import type { Keplr } from "cosmes/registry";
-
-export interface SignOptions {
-  readonly preferNoSetFee?: boolean;
-  readonly preferNoSetMemo?: boolean;
-  readonly disableBalanceCheck?: boolean;
-}
 
 export class KeplrWalletConnectV2 extends ConnectedWallet {
   private readonly wc: WalletConnectV2;
   private readonly useAmino: boolean;
-  private readonly ext: Keplr;
 
   constructor(
     walletName: WalletName,
@@ -52,15 +44,6 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
       gasPrice
     );
     this.wc = wc;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    this.ext = wc;
-    this.ext.defaultOptions = {
-      sign: {
-        preferNoSetFee: true,
-        preferNoSetMemo: true,
-      },
-    };
     this.useAmino = useAmino;
   }
 
@@ -76,8 +59,6 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
     accountNumber: bigint,
     sequence: bigint
   ): Promise<string> {
-    console.log("KeplrWalletConnectV2");
-    console.log(fee.amount[0]);
     const tx = new Tx({
       chainId: this.chainId,
       pubKey: this.pubKey,
@@ -91,22 +72,21 @@ export class KeplrWalletConnectV2 extends ConnectedWallet {
       memo,
       timeoutHeight,
     };
+
+    const signOptions = {
+      preferNoSetFee: true,
+      preferNoSetMemo: true,
+    };
+
     let txRaw: TxRaw;
     if (this.useAmino) {
-      const sign = tx.toStdSignDoc(params);
-      const options: SignOptions = {
-        preferNoSetFee: true,
-        preferNoSetMemo: true,
-      };
       const { signed, signature } = await WalletError.wrap(
-        this.wc.signAmino(this.chainId, this.address, sign)
+        this.wc.signAmino(this.chainId, this.address, tx.toStdSignDoc(params), signOptions)
       );
-      console.log(signed.fee.amount[0]);
       txRaw = tx.toSignedAmino(signed, signature.signature);
     } else {
-      const sign = tx.toSignDoc(params);
       const { signed, signature } = await WalletError.wrap(
-        this.wc.signDirect(this.chainId, this.address, sign)
+        this.wc.signDirect(this.chainId, this.address, tx.toSignDoc(params), signOptions)
       );
       txRaw = tx.toSignedDirect(signed, signature.signature);
     }
